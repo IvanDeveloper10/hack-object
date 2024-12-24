@@ -10,7 +10,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: 'Object Detection',
+  title: 'Object Detection Time Real',
   description: 'Web application that detects objects in a real-time video or by importing image files',
 };
 
