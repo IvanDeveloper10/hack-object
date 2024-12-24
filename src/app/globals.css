@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.main-div {
+  padding-left: 10%;
+  padding-right: 10%;
+  padding-bottom: 10%;
+}
+
+.div-object-detection-image {
+  margin-top: 10%;
+}
+
+.button-select-image {
+  margin-bottom: 10%;
+}
+
+.button-detect-image {
+  margin-top: 10%;
+}
+
+.video {
+  width: 400px;
+  margin: 5%;
+}
