@@ -21,27 +21,31 @@ const Home = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const modelRef = useRef<cocoSsd.ObjectDetection | null>(null);
 
-  const loadModel = async () => {
-    const model = await cocoSsd.load();
-    modelRef.current = model;
-  };
+  // Cargar modelo en el cliente
+  useEffect(() => {
+    const loadModel = async () => {
+      if (typeof window !== 'undefined') {
+        const model = await cocoSsd.load();
+        modelRef.current = model;
+      }
+    };
+    loadModel();
+  }, []);
 
   const detectObjectsInVideo = async () => {
-    if (!modelRef.current) return;
+    if (!modelRef.current || !videoRef.current || !canvasRef.current) return;
 
-    const video = videoRef.current!;
-    const canvas = canvasRef.current!;
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
     const context = canvas.getContext('2d')!;
-
-    if (video.videoWidth === 0 || video.videoHeight === 0) {
-      return; // Esperar a que el video tenga dimensiones válidas
-    }
 
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
 
     const detect = async () => {
-      const predictions = await modelRef.current!.detect(video);
+      if (!modelRef.current) return;
+
+      const predictions = await modelRef.current.detect(video);
       context.clearRect(0, 0, canvas.width, canvas.height);
       context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
@@ -70,13 +74,14 @@ const Home = () => {
 
     const video = videoRef.current;
 
-    navigator.mediaDevices.getUserMedia({ video: true })
-      .then((stream) => {
-        video.srcObject = stream;
-        video.play();
-        setIsVideoPlaying(true);
-      })
-      .catch((error) => console.error('Error accessing webcam:', error));
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      video.srcObject = stream;
+      video.play();
+      setIsVideoPlaying(true);
+    } catch (error) {
+      console.error('Error accessing webcam:', error);
+    }
   };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -99,10 +104,6 @@ const Home = () => {
     };
   };
 
-  useEffect(() => {
-    loadModel();
-  }, []);
-
   const triggerFileInput = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
@@ -111,20 +112,48 @@ const Home = () => {
 
   return (
     <Fragment>
+      <img src='./canva.png' alt='Canva' className='image-canva' />
       <div className='main-div'>
-        <h1 className='font-poppins text-center text-xl'>Real-time detection or detection by importing image</h1>
+        <h1 className='text-real-time'>Real-time detection or detection by importing image</h1>
         <div className='w-full h-full flex justify-between items-end'>
           <div className='flex flex-col justify-center items-center w-96'>
             <video className='video' ref={videoRef} />
             <canvas className='video' ref={canvasRef} />
             <div className='w-full flex justify-between gap-10'>
-              <Button color='primary' radius='none' size='lg' variant='ghost' onPress={startVideo} isDisabled={isVideoPlaying}>Start Video</Button>
-              <Button color='primary' radius='none' size='lg' variant='ghost' onPress={detectObjectsInVideo} isDisabled={!isVideoPlaying}>Start Detection</Button>
+              <Button
+                color='primary'
+                radius='none'
+                size='lg'
+                variant='ghost'
+                onPress={startVideo}
+                isDisabled={isVideoPlaying}
+              >
+                Start Video
+              </Button>
+              <Button
+                color='primary'
+                radius='none'
+                size='lg'
+                variant='ghost'
+                onPress={detectObjectsInVideo}
+                isDisabled={!isVideoPlaying}
+              >
+                Start Detection
+              </Button>
             </div>
           </div>
           <div className='flex justify-center items-center'>
             <div className='flex flex-col items-center'>
-              <Button color='primary' radius='none' size='lg' variant='ghost' onPress={triggerFileInput} className='button-select-image'>Select Image</Button>
+              <Button
+                color='primary'
+                radius='none'
+                size='lg'
+                variant='ghost'
+                onPress={triggerFileInput}
+                className='button-select-image'
+              >
+                Select Image
+              </Button>
               <input
                 ref={fileInputRef}
                 type='file'
@@ -134,8 +163,10 @@ const Home = () => {
               />
               {image && (
                 <div className='flex flex-col items-center gap-10'>
-                  <img src={image} alt='Uploaded' width={'200px'} height={'200px'} className='rounded-3xl' />
-                  <Button onPress={detectObjectsInImage} className='button-detect-image'>Detect Object</Button>
+                  <img src={image} alt='Uploaded' width='200px' height='200px' className='rounded-3xl' />
+                  <Button onPress={detectObjectsInImage} className='button-detect-image'>
+                    Detect Object
+                  </Button>
                   <div className='div-object-detection-image'>
                     {detectedObjects.map((obj, index) => (
                       <p key={index}>

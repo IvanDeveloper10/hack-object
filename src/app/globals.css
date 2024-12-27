@@ -24,3 +24,16 @@
   width: 400px;
   margin: 5%;
 }
+
+.image-canva {
+  position: absolute;
+  z-index: -1;
+  width: 1080px;
+}
+
+.text-real-time {
+  font-family: Poppins, sans-serif;
+  font-weight: semibold;
+  font-size: 25px;
+  text-align: center;
+}

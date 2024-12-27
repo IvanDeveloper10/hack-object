@@ -4,7 +4,7 @@ import './globals.css';
 import { Providers } from './providers';
 
 const poppins = Poppins({
-  weight: ['400', '500', '600', '900'],
+  weight: ['400', '500', '800', '900'],
   style: ['normal'],
   subsets: ['latin'],
 });
