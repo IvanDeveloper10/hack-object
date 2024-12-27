@@ -112,7 +112,7 @@ const Home = () => {
 
   return (
     <Fragment>
-      <img src='/canva.png' alt='Canva' className='image-canva' />
+      <img src='/Canva.png' alt='Canva' className='image-canva' />
       <div className='main-div'>
         <h1 className='text-real-time'>Real-time detection or detection by importing image</h1>
         <div className='w-full h-full flex justify-between items-end'>
